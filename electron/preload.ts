@@ -4,6 +4,7 @@ import type { EncodingType, SaveSessionPayload, TransformType } from '../src/eng
 const api = {
   getState: () => ipcRenderer.invoke('prime-orbit:get-state'),
   setMaxIndex: (value: number) => ipcRenderer.invoke('prime-orbit:set-max-index', value),
+  setPrimeState: (primeInput: string) => ipcRenderer.invoke('prime-orbit:set-prime-state', primeInput),
   transform: (transform: TransformType) => ipcRenderer.invoke('prime-orbit:transform', transform),
   encodeCurrent: (encoding: EncodingType) => ipcRenderer.invoke('prime-orbit:encode-current', encoding),
   copy: (text: string) => ipcRenderer.invoke('prime-orbit:copy', text),

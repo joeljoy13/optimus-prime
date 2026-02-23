@@ -6,10 +6,11 @@ import type {
   TransformResponse,
   TransformType
 } from './types';
-import { applyTransform, encodeFromPrime, randomSeedPrime } from './transform';
+import { validatePrimeInput } from '../utils/validation';
+import { encodeFromPrime, randomSeedPrime, transformPrime } from './transform';
 
-const MIN_INDEX_CAP = 10;
-const MAX_INDEX_CAP = 1_000_000;
+const MIN_INDEX_CAP = 100;
+const MAX_INDEX_CAP = 100_000;
 
 export class PrimeOrbitService {
   private currentPrime: bigint;
@@ -46,7 +47,7 @@ export class PrimeOrbitService {
 
   public transform(transform: TransformType): TransformResponse {
     const before = this.currentPrime;
-    const transformed = applyTransform(before, transform, this.maxIndex);
+    const transformed = transformPrime(before, transform, this.maxIndex);
     this.currentPrime = transformed.nextPrime;
 
     const entry: HistoryEntry = {
@@ -68,5 +69,27 @@ export class PrimeOrbitService {
 
   public encodeCurrent(encoding: EncodingType): EncodedPassword {
     return encodeFromPrime(this.currentPrime, encoding);
+  }
+
+  public setPrimeState(primeInput: string): EngineSnapshot {
+    const parsed = validatePrimeInput(primeInput);
+    if (!parsed.valid || parsed.value === undefined) {
+      throw new Error(parsed.error ?? 'Invalid prime input.');
+    }
+
+    const previous = this.currentPrime;
+    this.currentPrime = parsed.value;
+    this.history = [
+      {
+        id: `${Date.now()}-manual-set`,
+        transform: 'manual-set',
+        previousPrime: previous.toString(),
+        resultPrime: this.currentPrime.toString(),
+        note: 'Manual Prime Set',
+        timestamp: new Date().toISOString()
+      }
+    ];
+
+    return this.getSnapshot();
   }
 }

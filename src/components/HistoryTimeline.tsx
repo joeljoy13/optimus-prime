@@ -25,9 +25,13 @@ const HistoryTimeline = ({ history }: HistoryTimelineProps): JSX.Element => {
           <p className="mt-2 text-xs text-sky-100/80">
             {formatPrimeLabel(entry.previousPrime)} {'->'} {formatPrimeLabel(entry.resultPrime)}
           </p>
-          <p className="mt-1 text-[11px] text-cyan-200/70">
-            index {entry.boundedIndex} | hash {entry.hashHex.slice(0, 16)}...
-          </p>
+          {entry.note ? (
+            <p className="mt-1 text-[11px] text-cyan-200/80">{entry.note}</p>
+          ) : (
+            <p className="mt-1 text-[11px] text-cyan-200/70">
+              index {entry.boundedIndex ?? 0} | hash {(entry.hashHex ?? '').slice(0, 16)}...
+            </p>
+          )}
         </li>
       ))}
     </ul>

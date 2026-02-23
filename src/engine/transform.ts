@@ -21,7 +21,7 @@ export interface PrimeTransformResult {
   hashHex: string;
 }
 
-export const applyTransform = (
+export const transformPrime = (
   currentPrime: bigint,
   transform: TransformType,
   maxIndex: number
@@ -64,6 +64,8 @@ export const applyTransform = (
 
   return { nextPrime: next, boundedIndex, hashHex };
 };
+
+export const applyTransform = transformPrime;
 
 export const encodeFromPrime = (prime: bigint, encoding: EncodingType): EncodedPassword =>
   encodePrime(prime, encoding);

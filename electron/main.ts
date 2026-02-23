@@ -35,6 +35,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('prime-orbit:set-max-index', (_event, value: number) => service.setMaxIndex(value));
 
+  ipcMain.handle('prime-orbit:set-prime-state', (_event, primeInput: string) =>
+    service.setPrimeState(primeInput)
+  );
+
   ipcMain.handle('prime-orbit:transform', (_event, transform: TransformType) =>
     service.transform(transform)
   );

@@ -6,15 +6,18 @@ export type TransformType =
   | 'prime-gap'
   | 'hash-reprime';
 
+export type HistoryEventType = TransformType | 'manual-set';
+
 export type EncodingType = 'base62' | 'base85' | 'hex' | 'ascii-printable';
 
 export interface HistoryEntry {
   id: string;
-  transform: TransformType;
+  transform: HistoryEventType;
   previousPrime: string;
   resultPrime: string;
-  boundedIndex: number;
-  hashHex: string;
+  boundedIndex?: number;
+  hashHex?: string;
+  note?: string;
   timestamp: string;
 }
 

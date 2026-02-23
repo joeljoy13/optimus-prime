@@ -10,6 +10,7 @@
   },
   "include": [
     "./**/*.ts",
-    "../src/engine/**/*.ts"
+    "../src/engine/**/*.ts",
+    "../src/utils/**/*.ts"
   ]
 }

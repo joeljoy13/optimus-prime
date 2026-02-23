@@ -2,7 +2,7 @@ export const formatPrimeLabel = (prime: string): string => {
   if (prime.length <= 28) {
     return prime;
   }
-  return `${prime.slice(0, 18)}…${prime.slice(-10)}`;
+  return `${prime.slice(0, 18)}...${prime.slice(-10)}`;
 };
 
 export const formatTimestamp = (isoTime: string): string =>
@@ -14,5 +14,6 @@ export const transformTitles: Record<string, string> = {
   'sophie-germain': 'Sophie Germain',
   safe: 'Safe Prime',
   'prime-gap': 'Prime Gap',
-  'hash-reprime': 'Hash & Re-Prime'
+  'hash-reprime': 'Hash & Re-Prime',
+  'manual-set': 'Manual Prime Set'
 };
