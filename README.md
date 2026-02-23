@@ -149,6 +149,10 @@ Generated installer location:
 
 - `release/Prime-Orbit-<version>-Setup.exe`
 
+Production path note:
+
+- Vite is configured with `base: "./"` in `vite.config.ts` so packaged Electron `file://` loads resolve JS/CSS assets correctly.
+
 ## For Non-Developers
 
 1. Open the GitHub Releases page for PRIME ORBIT.

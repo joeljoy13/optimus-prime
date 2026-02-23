@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 
 const electronBinary = require('electron');
-const env = { ...process.env, VITE_DEV_SERVER_URL: 'http://localhost:5173' };
+const env = { ...process.env, NODE_ENV: 'development', VITE_DEV_SERVER_URL: 'http://localhost:5173' };
 delete env.ELECTRON_RUN_AS_NODE;
 
 const child = spawn(electronBinary, ['.'], {

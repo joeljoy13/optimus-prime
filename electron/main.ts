@@ -22,10 +22,10 @@ const createWindow = (): void => {
     }
   });
 
-  const devUrl = process.env.VITE_DEV_SERVER_URL;
-  if (devUrl) {
-    void win.loadURL(devUrl);
+  if (process.env.NODE_ENV === 'development') {
+    void win.loadURL('http://localhost:5173');
   } else {
+    // Compiled main sits at electron-dist/electron/main.js, renderer is at dist/index.html.
     void win.loadFile(path.join(__dirname, '..', '..', 'dist', 'index.html'));
   }
 };
