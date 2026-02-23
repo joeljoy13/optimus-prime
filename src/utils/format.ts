@@ -15,5 +15,6 @@ export const transformTitles: Record<string, string> = {
   safe: 'Safe Prime',
   'prime-gap': 'Prime Gap',
   'hash-reprime': 'Hash & Re-Prime',
-  'manual-set': 'Manual Prime Set'
+  'manual-set': 'Manual Prime Set',
+  'random-generated': 'Random Prime Generated'
 };

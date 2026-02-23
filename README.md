@@ -1,18 +1,20 @@
 # PRIME ORBIT
 
-PRIME ORBIT is a desktop cryptographic utility that evolves a prime-number state through deterministic, hash-indexed transformations to produce reproducible high-entropy password outputs.
+PRIME ORBIT is an Electron desktop application that transforms a prime-number state through deterministic cryptographic indexing to generate reproducible, high-entropy password outputs.
 
 ## Features
 
-- Deterministic prime transformation engine with SHA-256 bounded indexing.
+- Deterministic prime transformation engine (`SHA-256` + bounded index).
 - Prime families: Regular, Twin, Sophie Germain, Safe, Prime Gap, Hash & Re-Prime.
-- BigInt-only arithmetic and Miller-Rabin primality testing.
-- Cryptographically secure initial seed from `crypto.randomBytes()`.
+- BigInt-based arithmetic with Miller-Rabin primality checks.
+- Manual prime state input with strict validation.
+- Random prime generation (`64/128/256/512` bit) from `crypto.randomBytes()`.
+- Configurable modulo bound `M` (`100..100000`) with safe fallback on invalid input.
 - Export encodings: Base62, Base85, Hex, ASCII printable.
-- Manual Prime Input with strict primality validation.
-- Custom Index Bound (`M`) with validation and safe fallback behavior.
-- Session save, reset, copy-to-clipboard, and entropy estimation.
-- Electron desktop delivery with React + TypeScript + Tailwind glassmorphism UI.
+- Entropy indicator, copy-to-clipboard, reset, and session save.
+- Interactive tutorial mode with guided highlights.
+- Optional synthesized Matrix-inspired sound design (Web Audio API).
+- Windows NSIS executable packaging via `electron-builder`.
 
 ## Mathematical Model
 
@@ -25,62 +27,95 @@ For a selected transformation `T`:
 1. `new_index_hash = SHA256(current_prime || T)`
 2. `hash_bigint = BigInt(new_index_hash)`
 3. `bounded_index = hash_bigint mod M`
-4. Select the `(bounded_index + 1)`th prime of the chosen type
-5. `STATE = resulting_prime`
+4. Select the `(bounded_index + 1)`th prime of the chosen family
+5. Set `STATE = resulting_prime`
 
-All operations are deterministic for the same `(STATE, T, M)` triple.
+For fixed `(STATE, T, M)`, the next state is deterministic.
 
 ## Manual Prime Input
 
-Users may set their own starting prime from the UI (`Set Prime State`).
+`Set Prime State` accepts a user-defined integer and validates:
 
-Validation rules:
+- positive integer
+- `>= 2`
+- Miller-Rabin prime check
 
-- Must be a positive integer.
-- Must be at least `2`.
-- Must pass Miller-Rabin primality testing.
+Invalid input is rejected inline and state remains unchanged.
 
-If invalid, state is not updated and an inline error is shown. Composite inputs return: `Input is not prime.`
+## Random Prime Generator
 
-If valid:
+Use `Generate Random Prime` to securely replace state with a fresh random prime.
 
-- Current state is replaced.
-- Transformation history is cleared and a `Manual Prime Set` event is logged.
+- RNG source: `crypto.randomBytes()`
+- Bit length options:
+  - `64-bit`
+  - `128-bit` (default)
+  - `256-bit`
+  - `512-bit` (performance warning shown)
+- Candidate handling:
+  - proper bit masking
+  - highest bit forced for requested width
+  - odd candidate enforced
+  - Miller-Rabin loop until prime found
+
+When generated, history is reset with event: `Random Prime Generated`.
 
 ## Custom Index Bound (M)
 
-Users can adjust `M` (`Index Bound (M)`) that controls hash-indexed prime selection.
+`Index Bound (M)` controls transform index capping.
 
-- Default: `10,000`
-- Minimum: `100`
-- Maximum: `100,000`
-- Integer-only validation
+- Default: `10000`
+- Min: `100`
+- Max: `100000`
+- Integer-only input
 
-Invalid `M` behavior:
+Invalid values:
 
-- Inline validation error is shown.
-- Input reverts to the previous valid value.
+- show inline validation error
+- revert to previous valid value
 
-Performance note:
+Higher `M` broadens search index space and can increase compute time.
 
-- Large `M` values trigger a non-blocking warning because they may increase transform time.
+## Tutorial Mode
 
-### Effect of Custom M
+Click `Tutorial Mode` for a built-in guided walkthrough.
 
-- Computational complexity:
-  - Higher `M` can map to larger ordinal indices, requiring deeper prime-family search.
-- Growth control:
-  - Smaller `M` constrains reachable index space, keeping transitions tighter.
-- Determinism:
-  - For fixed `(current_prime, transformation, M)`, resulting index and state remain reproducible.
+Steps cover:
+
+1. Current Prime State
+2. Prime Families
+3. Transformation feedback
+4. Modulo bound (`M`)
+5. Export encoding
+6. Entropy indicator
+
+Behavior:
+
+- glass overlay with dimmed background
+- one-at-a-time UI highlighting
+- Next / Back / Exit controls
+- completion flag saved in local storage to avoid auto-open after completion
+
+## Sound Design
+
+No external copyrighted assets are used.
+
+Audio is synthesized in real time using the Web Audio API:
+
+- short digital glitch tone on transformation
+- short whoosh on prime state change
+- optional low ambient hum
+- settings toggles for sound and hum
+
+Design target is subtle and minimal (< 300 ms event tones).
 
 ## Security Notes
 
-- No `Math.random()` is used for cryptographic state setup.
-- Initial prime state is derived from secure entropy via `crypto.randomBytes()`.
-- Primality checks use Miller-Rabin with pre-screening against small primes.
-- Renderer/main boundary uses Electron preload + IPC with context isolation.
-- No `eval` or unsafe parsing is used for numeric input handling.
+- No `Math.random()` for cryptographic state.
+- Secure entropy from `crypto.randomBytes()`.
+- Prime validation through Miller-Rabin with small-prime filtering.
+- No `eval` or unsafe dynamic parsing for numeric input.
+- Electron renderer/main split via preload IPC bridge and context isolation.
 
 ## Installation
 
@@ -94,31 +129,33 @@ npm install
 npm run dev
 ```
 
-## Building Executable
+## Creating the Executable
+
+One-command workflow:
 
 ```bash
-npm run build
-npm run dist
+npm run make-exe
 ```
 
-- `npm run dist` builds a Windows NSIS installer (`.exe`).
-- Cross-platform packaging config is included for macOS (`dmg`) and Linux (`AppImage`, `deb`).
+This runs install, build, and Windows packaging.
 
-## Publishing to GitHub
+Primary scripts:
 
-1. Initialize and commit:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial release: PRIME ORBIT"
-   ```
-2. Create a GitHub repository and add remote:
-   ```bash
-   git remote add origin <your-repository-url>
-   git branch -M main
-   git push -u origin main
-   ```
-3. Attach installer files from `release/` to a GitHub Release (optional).
+- `npm run build`
+- `npm run dist`
+- `npm run make-exe`
+
+Generated installer location:
+
+- `release/Prime-Orbit-<version>-Setup.exe`
+
+## For Non-Developers
+
+1. Open the GitHub Releases page for PRIME ORBIT.
+2. Download the latest `Prime-Orbit-...-Setup.exe`.
+3. Double-click the installer and follow prompts.
+
+No Node.js installation is required for end users.
 
 ## Tests
 
@@ -126,23 +163,25 @@ npm run dist
 npm test
 ```
 
-Includes coverage for:
+Includes tests for:
 
-- Miller-Rabin primality behavior
+- Miller-Rabin
 - Prime family generation
 - Hash-based bounded indexing
-- Encoding outputs
-- Prime input validation
-- Modulo validation
-- Custom `M` transform behavior, including edge bounds (`100`, `100000`)
+- Encoding functions
+- Manual input validation
+- Modulo validation and integration
+- Random prime bit-length correctness
+- Tutorial preference state
+- Sound toggle state
 
 ## Screenshots
 
-Add images here after running the app:
+Add screenshots here:
 
 - `docs/screenshots/main-dashboard.png`
 - `docs/screenshots/transform-history.png`
-- `docs/screenshots/export-panel.png`
+- `docs/screenshots/tutorial-mode.png`
 
 ## License
 

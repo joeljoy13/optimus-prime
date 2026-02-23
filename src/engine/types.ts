@@ -6,7 +6,9 @@ export type TransformType =
   | 'prime-gap'
   | 'hash-reprime';
 
-export type HistoryEventType = TransformType | 'manual-set';
+export type BitLengthOption = 64 | 128 | 256 | 512;
+
+export type HistoryEventType = TransformType | 'manual-set' | 'random-generated';
 
 export type EncodingType = 'base62' | 'base85' | 'hex' | 'ascii-printable';
 

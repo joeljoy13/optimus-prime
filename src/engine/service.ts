@@ -1,4 +1,5 @@
 import type {
+  BitLengthOption,
   EncodedPassword,
   EncodingType,
   EngineSnapshot,
@@ -7,6 +8,7 @@ import type {
   TransformType
 } from './types';
 import { validatePrimeInput } from '../utils/validation';
+import { generateRandomPrime } from './randomPrime';
 import { encodeFromPrime, randomSeedPrime, transformPrime } from './transform';
 
 const MIN_INDEX_CAP = 100;
@@ -90,6 +92,22 @@ export class PrimeOrbitService {
       }
     ];
 
+    return this.getSnapshot();
+  }
+
+  public async setRandomPrimeState(bitLength: BitLengthOption): Promise<EngineSnapshot> {
+    const previous = this.currentPrime;
+    this.currentPrime = await generateRandomPrime(bitLength);
+    this.history = [
+      {
+        id: `${Date.now()}-random-prime`,
+        transform: 'random-generated',
+        previousPrime: previous.toString(),
+        resultPrime: this.currentPrime.toString(),
+        note: 'Random Prime Generated',
+        timestamp: new Date().toISOString()
+      }
+    ];
     return this.getSnapshot();
   }
 }

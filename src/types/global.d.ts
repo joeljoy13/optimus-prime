@@ -1,4 +1,5 @@
 import type {
+  BitLengthOption,
   EncodedPassword,
   EngineSnapshot,
   SaveSessionPayload,
@@ -11,6 +12,7 @@ interface PrimeOrbitApi {
   getState: () => Promise<EngineSnapshot>;
   setMaxIndex: (value: number) => Promise<EngineSnapshot>;
   setPrimeState: (primeInput: string) => Promise<EngineSnapshot>;
+  setRandomPrimeState: (bitLength: BitLengthOption) => Promise<EngineSnapshot>;
   transform: (transform: TransformType) => Promise<TransformResponse>;
   encodeCurrent: (encoding: EncodingType) => Promise<EncodedPassword>;
   copy: (text: string) => Promise<boolean>;

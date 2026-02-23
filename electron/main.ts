@@ -2,7 +2,7 @@ import { app, BrowserWindow, clipboard, dialog, ipcMain } from 'electron';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { PrimeOrbitService } from '../src/engine/service';
-import type { EncodingType, SaveSessionPayload, TransformType } from '../src/engine/types';
+import type { BitLengthOption, EncodingType, SaveSessionPayload, TransformType } from '../src/engine/types';
 
 const service = new PrimeOrbitService();
 
@@ -37,6 +37,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('prime-orbit:set-prime-state', (_event, primeInput: string) =>
     service.setPrimeState(primeInput)
+  );
+
+  ipcMain.handle('prime-orbit:set-random-prime-state', (_event, bitLength: BitLengthOption) =>
+    service.setRandomPrimeState(bitLength)
   );
 
   ipcMain.handle('prime-orbit:transform', (_event, transform: TransformType) =>
